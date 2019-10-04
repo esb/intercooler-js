@@ -24,6 +24,7 @@ var Intercooler = Intercooler || (function() {
   var _scrollHandler = null;
   var _UUID = 1;
   var _readyHandlers = [];
+  var _onceHandlers = [];
 
   var _isDependentFunction = function(src, dest) {
     if (!src || !dest) {
@@ -759,6 +760,16 @@ var Intercooler = Intercooler || (function() {
         log(elt, formatError(e), "ERROR");
       }
     });
+
+    $.each(_onceHandlers, function(i, handler) {
+      try {
+        handler(elt);
+      } catch (e) {
+        log(elt, formatError(e), "ERROR");
+      }
+    });
+
+    _onceHandlers = [];
   }
 
   function autoFocus(elt) {
@@ -2016,6 +2027,9 @@ var Intercooler = Intercooler || (function() {
     ready: function(readyHandler) {
       _readyHandlers.push(readyHandler);
     },
+    once: function(onceHandler) {
+      _onceHandlers.push(onceHandler);
+    }, 
     _internal: {
       init: init,
       replaceOrAddMethod: replaceOrAddMethod,
